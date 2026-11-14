@@ -1,0 +1,110 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Noche de oasis: verdes profundos en lugar de negro, con oro y turquesa egipcia */
+  --color-fondo: #16201b;
+  --color-panel: #1f2b25;
+  --color-panel-2: #283730;
+  --color-linea: #3a4b41;
+  --color-oro: #d9ad50;
+  --color-oro-claro: #f2d892;
+  --color-oro-oscuro: #9a7a35;
+  --color-texto: #f5efdf;
+  --color-suave: #b2b8a5;
+  --color-peligro: #f2806f;
+  --color-ok: #7ad6a0;
+  --color-terraza: #5cc4b3;
+  --color-verde: #7cc28f;
+  --color-hoja: #4c8a5c;
+  --color-turquesa: #4fc1b0;
+
+  --font-display: var(--fuente-display), 'Times New Roman', serif;
+  --font-sans: var(--fuente-sans), system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background-color: var(--color-fondo);
+}
+
+/* El fondo va en <html> (no en <body>) para que la vegetación decorativa
+   con z-index negativo quede por encima del fondo y por debajo del contenido */
+body {
+  background: transparent;
+  color: var(--color-texto);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Luz de oasis: brillo verde y dorado, y un punteado suave de arena */
+html {
+  background-image:
+    radial-gradient(ellipse 70% 50% at 0% 0%, rgb(124 194 143 / 0.16), transparent 70%),
+    radial-gradient(ellipse 60% 45% at 100% 100%, rgb(79 193 176 / 0.12), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 55% -10%, rgb(217 173 80 / 0.14), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgb(242 216 146 / 0.06) 1px, transparent 0);
+  background-size: auto, auto, auto, 22px 22px;
+  background-attachment: fixed;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+::selection {
+  background: rgb(214 169 74 / 0.35);
+}
+
+input,
+select,
+textarea {
+  font-size: 16px; /* evita el zoom automático en iOS */
+}
+
+/* Botones y controles táctiles grandes en TPV y tablet */
+@media (pointer: coarse) {
+  .tactil {
+    min-height: 48px;
+  }
+}
+
+.borde-oro {
+  border-image: linear-gradient(90deg, transparent, var(--color-oro), transparent) 1;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.aparecer {
+  animation: aparecer 0.25s ease-out both;
+}
+
+/* Impresión de tickets: solo se imprime el ticket */
+.zona-impresion {
+  display: none;
+}
+@media print {
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+  html,
+  body {
+    background: #fff !important;
+    background-image: none !important;
+  }
+  body > *:not(.zona-impresion) {
+    display: none !important;
+  }
+  .zona-impresion {
+    display: block;
+  }
+  .zona-impresion .ticket-papel {
+    width: 72mm;
+    padding: 2mm;
+  }
+}
