@@ -77,12 +77,14 @@ export function FacturacionView({ perfil }: { perfil: Usuario }) {
     <div className="flex flex-col gap-4">
       {portal}
       <div className="flex flex-wrap items-end gap-2">
-        <Campo etiqueta="Desde">
-          <Entrada type="date" value={desde} onChange={(e) => e.target.value && setDesde(e.target.value)} className="w-40" />
-        </Campo>
-        <Campo etiqueta="Hasta">
-          <Entrada type="date" value={hasta} onChange={(e) => e.target.value && setHasta(e.target.value)} className="w-40" />
-        </Campo>
+        <div className="grid w-full grid-cols-2 gap-2 sm:w-auto">
+          <Campo etiqueta="Desde">
+            <Entrada type="date" value={desde} onChange={(e) => e.target.value && setDesde(e.target.value)} className="sm:w-40" />
+          </Campo>
+          <Campo etiqueta="Hasta">
+            <Entrada type="date" value={hasta} onChange={(e) => e.target.value && setHasta(e.target.value)} className="sm:w-40" />
+          </Campo>
+        </div>
         <div className="relative min-w-48 flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-suave" />
           <Entrada value={buscar} onChange={(e) => setBuscar(e.target.value)} placeholder="Número, mesa, cliente o NIF…" className="pl-9" />

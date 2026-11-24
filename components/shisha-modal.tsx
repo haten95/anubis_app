@@ -67,7 +67,7 @@ export function ShishaModal({
 
   return (
     <Modal abierto={articulo !== null} titulo={`${articulo?.nombre ?? 'Shisha'} · ${euros(articulo?.precio ?? 0)}`} onCerrar={onCerrar} ancho="grande">
-      <div className="grid gap-5 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:items-start">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:items-start">
         {/* Cazoleta y ajuste fino */}
         <div className="flex flex-col gap-4 md:sticky md:top-0">
         <div className="flex justify-center rounded-2xl bg-fondo/60 py-3">
@@ -168,7 +168,7 @@ export function ShishaModal({
         </Campo>
 
         <Aviso>{error}</Aviso>
-        <Boton variante="oro" className="py-4 text-base" onClick={confirmar} disabled={enviando || total !== 100}>
+        <Boton variante="oro" className="sticky bottom-0 z-10 py-4 text-base shadow-[0_-12px_24px_rgb(22_32_27/0.9)] md:static md:shadow-none" onClick={confirmar} disabled={enviando || total !== 100}>
           <Flame size={18} /> {enviando ? 'Añadiendo…' : 'Añadir a la comanda'}
         </Boton>
         </div>

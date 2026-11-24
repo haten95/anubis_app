@@ -111,7 +111,53 @@ export function CuadranteView() {
       {equipo.length === 0 ? (
         <Vacio>No hay personas activas en el equipo.</Vacio>
       ) : (
-        <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        <>
+        {/* Móvil: un bloque por día */}
+        <div className="flex flex-col gap-3 md:hidden">
+          {dias.map((d) => {
+            const delDia = turnos.filter((t) => t.fecha === d).sort((a, b) => a.inicio.localeCompare(b.inicio))
+            return (
+              <section key={d} className={clsx('rounded-2xl border p-3', d === hoy ? 'border-oro/50 bg-oro/5' : 'border-linea bg-panel/80')}>
+                <div className="mb-2 flex items-center justify-between">
+                  <h3 className={clsx('font-semibold', d === hoy ? 'text-oro-claro' : 'text-texto')}>
+                    {fechaLarga(d)} {d === hoy && <span className="text-xs font-normal">· hoy</span>}
+                  </h3>
+                  <button
+                    onClick={() => setEditando({ turno: null, usuarioId: equipo[0].id, fecha: d })}
+                    className="tactil flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-oro-claro hover:bg-panel-2"
+                  >
+                    <Plus size={16} /> Turno
+                  </button>
+                </div>
+                {delDia.length === 0 ? (
+                  <p className="text-sm text-suave/70">Nadie trabaja.</p>
+                ) : (
+                  <ul className="flex flex-col gap-1.5">
+                    {delDia.map((t) => (
+                      <li key={t.id}>
+                        <button
+                          onClick={() => setEditando({ turno: t, usuarioId: t.usuario_id, fecha: d })}
+                          className="tactil flex w-full items-center gap-3 rounded-xl bg-fondo/50 px-3 py-2.5 text-left"
+                        >
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-semibold">{equipo.find((u) => u.id === t.usuario_id)?.nombre ?? '—'}</span>
+                            <span className="text-sm text-suave">
+                              {horaCorta(t.inicio)}–{horaCorta(t.fin)} · {formatoHoras(horasTurno(t.inicio, t.fin))}
+                            </span>
+                          </span>
+                          <ChipFuncion funcion={t.funcion} />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            )
+          })}
+        </div>
+
+        {/* Escritorio y tablet: tabla semanal */}
+        <div className="-mx-4 hidden overflow-x-auto px-4 sm:mx-0 sm:px-0 md:block">
           <table className="w-full min-w-[860px] border-separate border-spacing-1.5 text-sm">
             <thead>
               <tr>
@@ -176,6 +222,7 @@ export function CuadranteView() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       <div className="flex flex-wrap gap-3 text-xs text-suave">

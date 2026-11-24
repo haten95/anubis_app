@@ -1,3 +1,7 @@
+'use client'
+
+import { useId } from 'react'
+
 /**
  * Decoración de Anubis: vegetación de oasis (papiros y palmeras) y motivos
  * egipcios minimalistas (loto, ojo de Horus, sol alado, friso).
@@ -190,10 +194,11 @@ export function SolAlado({ className }: { className?: string }) {
 
 /** Friso horizontal: lotos y capullos alternos, como en las cenefas de los templos */
 export function Friso({ className }: { className?: string }) {
+  const id = `friso-${useId().replace(/:/g, '')}`
   return (
     <svg className={className} aria-hidden="true" width="100%" height="14" preserveAspectRatio="none">
       <defs>
-        <pattern id="friso-anubis" width="36" height="14" patternUnits="userSpaceOnUse">
+        <pattern id={id} width="36" height="14" patternUnits="userSpaceOnUse">
           {/* Loto abierto */}
           <path d="M9 13 C 4 10, 2 6, 2 2 C 5 4, 8 8, 9 13 C 10 8, 13 4, 16 2 C 16 6, 14 10, 9 13 Z" fill="none" stroke={ORO} strokeWidth="1.1" strokeLinejoin="round" />
           {/* Capullo */}
@@ -201,7 +206,7 @@ export function Friso({ className }: { className?: string }) {
           <path d="M0 13.4 H 36" stroke={ORO} strokeWidth="0.8" opacity="0.6" />
         </pattern>
       </defs>
-      <rect width="100%" height="14" fill="url(#friso-anubis)" />
+      <rect width="100%" height="14" fill={`url(#${id})`} />
     </svg>
   )
 }

@@ -121,7 +121,7 @@ export function SalaView({ perfil }: { perfil: Usuario }) {
                   {suyas.length === 0 ? (
                     <Vacio>Esta zona no tiene mesas.</Vacio>
                   ) : (
-                    <div className="grid grid-cols-[repeat(auto-fill,minmax(108px,1fr))] gap-3">
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-[repeat(auto-fill,minmax(108px,1fr))] sm:gap-3">
                       {suyas.map((m) => {
                         const c = comandaDeMesa.get(m.id)
                         const est: EstadoMesa = !c ? 'libre' : c.estado === 'cuenta' ? 'cobro' : 'ocupada'
@@ -132,14 +132,14 @@ export function SalaView({ perfil }: { perfil: Usuario }) {
                             onClick={() => pulsarMesa(m.id)}
                             disabled={abriendo !== null}
                             className={clsx(
-                              'tactil flex flex-col items-center rounded-2xl border p-2 pb-3 transition disabled:opacity-60',
+                              'tactil flex min-w-0 flex-col items-center rounded-2xl border p-1.5 pb-2.5 transition active:scale-[0.97] disabled:opacity-60 sm:p-2 sm:pb-3',
                               est === 'libre' && 'border-linea bg-panel/70 hover:border-oro-oscuro hover:bg-panel-2',
                               est === 'ocupada' && 'border-oro/50 bg-oro/10 hover:bg-oro/15',
                               est === 'cobro' && 'border-peligro/50 bg-peligro/10 hover:bg-peligro/15',
                             )}
                             title={`Mesa ${m.numero}`}
                           >
-                            <MesaIcono numero={m.numero} capacidad={m.capacidad} estado={est} />
+                            <MesaIcono numero={m.numero} capacidad={m.capacidad} estado={est} className="h-auto w-full max-w-[92px]" />
                             {c ? (
                               <>
                                 <span className="font-display text-sm font-bold text-oro-claro">{euros(total)}</span>

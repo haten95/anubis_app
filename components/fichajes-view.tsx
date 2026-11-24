@@ -109,13 +109,13 @@ export function FichajesView({ esDueno }: { esDueno: boolean }) {
       {/* Resumen semanal por persona: fichado frente a planificado */}
       <Panel className="p-0 sm:p-0">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[520px] text-sm">
+          <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-linea text-left text-xs uppercase tracking-widest text-suave">
-                <th className="px-4 py-3 font-semibold">Persona</th>
-                <th className="px-4 py-3 text-right font-semibold">Planificado</th>
-                <th className="px-4 py-3 text-right font-semibold">Fichado</th>
-                <th className="px-4 py-3 text-right font-semibold">Diferencia</th>
+                <th className="px-3 py-3 font-semibold sm:px-4">Persona</th>
+                <th className="px-2 py-3 text-right font-semibold sm:px-4">Planificado</th>
+                <th className="px-2 py-3 text-right font-semibold sm:px-4">Fichado</th>
+                <th className="px-2 py-3 text-right font-semibold sm:px-4">Diferencia</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-linea">
@@ -126,10 +126,10 @@ export function FichajesView({ esDueno }: { esDueno: boolean }) {
                 const dif = Math.round((real - plan) * 100) / 100
                 return (
                   <tr key={u.id}>
-                    <td className="px-4 py-2.5 font-semibold">{u.nombre}</td>
-                    <td className="px-4 py-2.5 text-right">{formatoHoras(plan)}</td>
-                    <td className="px-4 py-2.5 text-right">{formatoHoras(real)}</td>
-                    <td className={clsx('px-4 py-2.5 text-right', Math.abs(dif) < 0.25 ? 'text-suave' : dif > 0 ? 'text-oro-claro' : 'text-peligro')}>
+                    <td className="px-3 py-2.5 font-semibold sm:px-4">{u.nombre}</td>
+                    <td className="px-2 py-2.5 text-right sm:px-4">{formatoHoras(plan)}</td>
+                    <td className="px-2 py-2.5 text-right sm:px-4">{formatoHoras(real)}</td>
+                    <td className={clsx('px-2 py-2.5 text-right sm:px-4', Math.abs(dif) < 0.25 ? 'text-suave' : dif > 0 ? 'text-oro-claro' : 'text-peligro')}>
                       {Math.abs(dif) < 0.25 ? '—' : `${dif > 0 ? '+' : '−'}${formatoHoras(Math.abs(dif))}`}
                     </td>
                   </tr>

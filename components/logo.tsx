@@ -1,13 +1,19 @@
+'use client'
+
+import { useId } from 'react'
+
 export function Logo({ tamano = 40 }: { tamano?: number }) {
+  // Id único por logo: un degradado definido en un elemento oculto no se puede reutilizar
+  const id = `oro-logo-${useId().replace(/:/g, '')}`
   return (
     <svg width={tamano} height={tamano} viewBox="0 0 64 64" aria-hidden="true">
       <defs>
-        <linearGradient id="oro-logo" x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stopColor="#f0d38c" />
           <stop offset="1" stopColor="#a87d2c" />
         </linearGradient>
       </defs>
-      <g fill="none" stroke="url(#oro-logo)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+      <g fill="none" stroke={`url(#${id})`} strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
         <ellipse cx="32" cy="19" rx="8" ry="10" />
         <path d="M32 29v26M19 35h26" />
       </g>

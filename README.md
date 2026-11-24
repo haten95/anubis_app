@@ -5,7 +5,7 @@ PWA para el local de shishas Anubis. Diseño completo en [`docs/Documento de dis
 ## Fase 1 (hecha)
 - Login y registro. El **primer usuario que se registra es el dueño**; el resto entra como empleado pendiente hasta que el dueño lo active.
 - Roles dueño / encargado / empleado con seguridad en la base de datos (RLS).
-- **Local**: salas interiores y terrazas, mesas numeradas (número único en todo el local), capacidad, activar/desactivar.
+- **Local**: salas interiores y terrazas, mesas numeradas (por separado en salas interiores y en terrazas), capacidad, activar/desactivar.
 - **Sala**: mapa de mesas por zona, en tiempo real.
 - **Carta**: categorías (con las 10 iniciales), artículos con precio e IVA, sabores de shisha con su color para la cazoleta. El encargado edita la carta pero no los precios.
 - **Equipo**: activar cuentas y asignar roles.

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
+import { useId, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { divisionesMovibles, limites, moverDivision, posicionDesdePunto, punto, suma, trazoSector, type Porcion } from '@/lib/shisha'
 
 export interface PorcionColor {
@@ -35,7 +35,7 @@ export function Cazoleta({
 }) {
   const lim = limites(porciones.map((p, i) => ({ saborId: i, porcentaje: p.porcentaje })))
   const total = lim[lim.length - 1]
-  const id = `caz-${tamano}`
+  const id = `caz-${useId().replace(/:/g, '')}`
 
   return (
     <svg

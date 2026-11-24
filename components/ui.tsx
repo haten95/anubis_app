@@ -1,9 +1,11 @@
 'use client'
 
 import clsx from 'clsx'
-import { X } from 'lucide-react'
+import { ArrowLeft, X } from 'lucide-react'
+import { useCapa } from '@/lib/navegacion'
+import { createPortal } from 'react-dom'
 import { Friso } from './decoracion'
-import { useEffect, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react'
+import { type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react'
 
 type Variante = 'oro' | 'secundario' | 'fantasma' | 'peligro'
 
@@ -56,12 +58,15 @@ export function Panel({ children, className }: { children: ReactNode; className?
 
 export function Titulo({ children, accion }: { children: ReactNode; accion?: ReactNode }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
-      <div>
-        <h2 className="font-display text-xl tracking-wide text-oro-claro sm:text-2xl">{children}</h2>
+    // En el móvil el nombre de la sección ya está en la cabecera: aquí solo quedan las acciones
+    <div className={clsx('flex flex-wrap items-end justify-between gap-3 lg:mb-5', accion ? 'mb-4' : 'mb-1')}>
+      <div className="hidden lg:block">
+        <h2 className="font-display text-2xl tracking-wide text-oro-claro">{children}</h2>
         <Friso className="mt-1.5 w-44 opacity-80" />
       </div>
-      {accion}
+      {accion && (
+        <div className="flex w-full flex-wrap gap-2 lg:w-auto max-lg:[&_button]:flex-1 max-lg:[&>*]:w-full">{accion}</div>
+      )}
     </div>
   )
 }
@@ -125,15 +130,12 @@ export function Modal({
   children: ReactNode
   ancho?: 'normal' | 'grande'
 }) {
-  useEffect(() => {
-    if (!abierto) return
-    const alPulsar = (e: KeyboardEvent) => e.key === 'Escape' && onCerrar()
-    window.addEventListener('keydown', alPulsar)
-    return () => window.removeEventListener('keydown', alPulsar)
-  }, [abierto, onCerrar])
+  // El botón atrás del móvil y la tecla Escape cierran la ventana
+  useCapa(abierto, onCerrar)
 
-  if (!abierto) return null
-  return (
+  if (!abierto || typeof document === 'undefined') return null
+  // Se pinta directamente en <body>: así ninguna pantalla puede dejarla por detrás de la cabecera o del menú
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4"
       onMouseDown={(e) => e.target === e.currentTarget && onCerrar()}
@@ -143,19 +145,31 @@ export function Modal({
         aria-modal="true"
         aria-label={titulo}
         className={clsx(
-          'aparecer max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl border border-linea bg-panel p-5 sm:rounded-3xl',
+          'aparecer flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-3xl border border-linea bg-panel shadow-2xl sm:max-h-[90dvh] sm:rounded-3xl',
           ancho === 'grande' ? 'sm:max-w-4xl' : 'sm:max-w-lg',
         )}
       >
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h3 className="font-display text-lg text-oro-claro">{titulo}</h3>
-          <button onClick={onCerrar} className="rounded-lg p-2 text-suave hover:bg-panel-2" aria-label="Cerrar">
-            <X size={18} />
-          </button>
+        {/* Cabecera fija: siempre se puede volver aunque el contenido sea largo */}
+        <div className="shrink-0 border-b border-linea/70 bg-panel px-3 pb-2.5 pt-2 sm:px-5 sm:pt-4">
+          <div className="mx-auto mb-2 h-1.5 w-11 rounded-full bg-linea sm:hidden" aria-hidden="true" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onCerrar}
+              className="tactil flex items-center gap-1 rounded-xl px-2 py-2 text-sm font-semibold text-suave hover:bg-panel-2 hover:text-texto sm:hidden"
+              aria-label="Volver"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <h3 className="min-w-0 flex-1 truncate font-display text-lg text-oro-claro">{titulo}</h3>
+            <button onClick={onCerrar} className="hidden rounded-lg p-2 text-suave hover:bg-panel-2 hover:text-texto sm:block" aria-label="Cerrar">
+              <X size={18} />
+            </button>
+          </div>
         </div>
-        {children}
+        <div className="overflow-y-auto overscroll-contain px-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-4 sm:px-5 sm:pb-5">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
 

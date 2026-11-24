@@ -116,7 +116,62 @@ export function NominasView() {
       {nominas.length === 0 ? (
         <Vacio>No hay nóminas de {nombreMes(mes).toLowerCase()}. Pulsa «Calcular nóminas del mes».</Vacio>
       ) : (
-        <Panel className="p-0 sm:p-0">
+        <>
+        {/* Móvil: una ficha por persona */}
+        <div className="flex flex-col gap-3 md:hidden">
+          {nominas.map((n) => (
+            <Panel key={n.id}>
+              <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold">{nombre(n.usuario_id)}</p>
+                  <p className="text-xs text-suave">{formatoHoras(n.horas)} fichadas</p>
+                </div>
+                <div className="text-right">
+                  <p className="font-display text-xl text-oro-claro">{euros(n.neto)}</p>
+                  <p className="text-[11px] text-suave">neto</p>
+                </div>
+              </div>
+              <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                <dt className="text-suave">Bruto</dt>
+                <dd className="text-right">{euros(n.bruto)}</dd>
+                <dt className="text-suave">IRPF</dt>
+                <dd className="text-right">−{euros(n.irpf)}</dd>
+                <dt className="text-suave">Seguridad Social</dt>
+                <dd className="text-right">−{euros(n.seguridad_social)}</dd>
+                {n.otras_deducciones > 0 && (
+                  <>
+                    <dt className="text-suave">Otras</dt>
+                    <dd className="text-right">−{euros(n.otras_deducciones)}</dd>
+                  </>
+                )}
+              </dl>
+              <div className="mt-3 flex gap-2">
+                <Boton
+                  className="flex-1"
+                  variante={n.estado === 'pagada' ? 'secundario' : 'oro'}
+                  onClick={async () => {
+                    const { error } = await rpc('pagar_nomina', { p_nomina: n.id, p_pagada: n.estado !== 'pagada' })
+                    if (error) setError(error)
+                    cargar()
+                  }}
+                >
+                  {n.estado === 'pagada' ? <SquareCheckBig size={16} className="text-ok" /> : <Square size={16} />}
+                  {n.estado === 'pagada' ? 'Pagada' : 'Marcar pagada'}
+                </Boton>
+                {n.estado === 'pendiente' && (
+                  <Boton onClick={() => setEditNomina(n)} aria-label="Ajustar nómina">
+                    <Pencil size={16} /> Ajustar
+                  </Boton>
+                )}
+              </div>
+            </Panel>
+          ))}
+          <p className="text-right text-sm text-suave">
+            Total: bruto <strong className="text-texto">{euros(total.bruto)}</strong> · neto <strong className="text-oro-claro">{euros(total.neto)}</strong>
+          </p>
+        </div>
+
+        <Panel className="hidden p-0 sm:p-0 md:block">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-sm">
               <thead>
@@ -178,6 +233,7 @@ export function NominasView() {
             </table>
           </div>
         </Panel>
+        </>
       )}
 
       <p className="text-xs text-suave">

@@ -153,7 +153,7 @@ function MiDia({ perfil }: { perfil: Usuario }) {
                 {abierto ? `Entrada a las ${horaDe(abierto.entrada)} · llevas ${formatoHoras(horasEntre(abierto.entrada, null))}` : 'Ficha al empezar y al terminar tu jornada.'}
               </p>
             </div>
-            <Boton variante={abierto ? 'secundario' : 'oro'} className="px-6 py-4 text-base" onClick={fichar} disabled={fichando}>
+            <Boton variante={abierto ? 'secundario' : 'oro'} className="w-full px-6 py-4 text-base sm:w-auto" onClick={fichar} disabled={fichando}>
               {abierto ? <LogOut size={20} /> : <LogIn size={20} />}
               {abierto ? 'Fichar salida' : 'Fichar entrada'}
             </Boton>

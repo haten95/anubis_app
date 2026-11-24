@@ -15,7 +15,7 @@ import {
   Trash2,
   Undo2,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useCarta } from '@/lib/use-carta'
 import { rpc, totalLineas } from '@/lib/use-servicio'
 import { euros, haceCuanto } from '@/lib/format'
@@ -35,6 +35,7 @@ import { MiniCazoleta } from './cazoleta'
 import { ShishaModal } from './shisha-modal'
 import { CobroHecho, CobroModal } from './cobro-modal'
 import { MesaIcono } from './mesa-icono'
+import { useCapa } from '@/lib/navegacion'
 
 export function ComandaView({
   perfil,
@@ -75,6 +76,17 @@ export function ComandaView({
   const [moviendo, setMoviendo] = useState(false)
   const [cobrando, setCobrando] = useState(false)
   const [ticketCobrado, setTicketCobrado] = useState<number | null>(null)
+  const [anadido, setAnadido] = useState<string | null>(null)
+
+  // «Atrás» (móvil, navegador o Escape) vuelve a la sala
+  useCapa(true, onVolver)
+
+  // Aviso breve de lo último añadido (en el móvil la comanda no está a la vista)
+  useEffect(() => {
+    if (!anadido) return
+    const t = setTimeout(() => setAnadido(null), 1600)
+    return () => clearTimeout(t)
+  }, [anadido])
 
   const total = totalLineas(lineas)
   const principales = lineas.filter((l) => l.linea_padre_id === null)
@@ -121,7 +133,7 @@ export function ComandaView({
   function pulsarArticulo(a: Articulo) {
     if (actual?.es_shisha) return setShisha(a)
     if (conNota) return setNota(a)
-    accion('anadir_linea', { p_comanda: comanda!.id, p_articulo: a.id, p_cantidad: 1 })
+    accion('anadir_linea', { p_comanda: comanda!.id, p_articulo: a.id, p_cantidad: 1 }).then(({ error }) => !error && setAnadido(a.nombre))
   }
 
   const pideCuenta = comanda.estado === 'cuenta'
@@ -130,9 +142,12 @@ export function ComandaView({
     <div className="aparecer">
       {/* Cabecera */}
       <div className="mb-4 flex flex-wrap items-center gap-3">
-        <Boton variante="secundario" onClick={onVolver} className="px-3" aria-label="Volver a la sala">
-          <ArrowLeft size={18} />
-        </Boton>
+        {/* En el móvil se vuelve con la flecha de la cabecera */}
+        <span className="hidden lg:block">
+          <Boton variante="secundario" onClick={onVolver} className="px-3" aria-label="Volver a la sala">
+            <ArrowLeft size={18} />
+          </Boton>
+        </span>
         <div className="mr-auto">
           <h2 className="font-display text-xl text-oro-claro sm:text-2xl">{textoMesa(mesa.tipo, mesa.numero)}</h2>
           <p className="text-xs text-suave">
@@ -146,8 +161,9 @@ export function ComandaView({
         <Aviso>{errorCarta || error}</Aviso>
       </div>
 
-      {/* Selector carta/comanda en móvil */}
-      <div className="mb-4 grid grid-cols-2 rounded-xl bg-panel p-1 text-sm lg:hidden">
+      {/* Selector carta/comanda en móvil (fijo bajo la cabecera) */}
+      <div className="sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-20 -mx-4 mb-4 bg-fondo/90 px-4 py-2 backdrop-blur lg:hidden">
+      <div className="grid grid-cols-2 rounded-xl border border-linea bg-panel p-1 text-sm">
         <button onClick={() => setVista('carta')} className={clsx('rounded-lg py-2.5 font-semibold', vista === 'carta' ? 'bg-panel-2 text-oro-claro' : 'text-suave')}>
           Carta
         </button>
@@ -155,8 +171,9 @@ export function ComandaView({
           Comanda · {euros(total)}
         </button>
       </div>
+      </div>
 
-      <div className="grid gap-5 lg:grid-cols-[1fr_400px]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1fr)_400px]">
         {/* CARTA */}
         <section className={clsx(vista !== 'carta' && 'hidden lg:block')}>
           {!carta ? (
@@ -225,7 +242,7 @@ export function ComandaView({
         {/* COMANDA */}
         <section className={clsx('lg:sticky lg:top-6 lg:self-start', vista !== 'comanda' && 'hidden lg:block')}>
           <div className="rounded-2xl border border-linea bg-panel">
-            <div className="max-h-[52dvh] overflow-y-auto p-3 lg:max-h-[58dvh]">
+            <div className="p-3 lg:max-h-[58dvh] lg:overflow-y-auto">
               {principales.length === 0 ? (
                 <p className="px-2 py-10 text-center text-sm text-suave">Comanda vacía. Añade algo de la carta.</p>
               ) : (
@@ -257,25 +274,7 @@ export function ComandaView({
             </div>
 
             <div className="border-t border-linea p-4">
-              <div className="mb-3 flex items-baseline justify-between">
-                <span className="text-sm uppercase tracking-widest text-suave">Total</span>
-                <span className="font-display text-3xl font-bold text-oro-claro">{euros(total)}</span>
-              </div>
-              {lineas.some((l) => l.merma) && (
-                <p className="mb-3 text-xs text-suave">Las líneas en merma no se cobran ni cuentan en la facturación.</p>
-              )}
-
-              <Boton
-                variante="oro"
-                className="w-full py-4 text-base"
-                disabled={ocupado || total <= 0}
-                onClick={() => setCobrando(true)}
-              >
-                <Receipt size={18} /> Cobrar {total > 0 && euros(total)}
-              </Boton>
-              {!hayCaja && total > 0 && <p className="mt-2 text-center text-xs text-peligro">No hay caja abierta: no se puede cobrar todavía.</p>}
-
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Boton
                   disabled={ocupado || principales.length === 0}
                   onClick={() => accion('pedir_cuenta', { p_comanda: comanda.id, p_pedida: !pideCuenta })}
@@ -306,9 +305,51 @@ export function ComandaView({
                 )}
               </div>
             </div>
+
+            {/* Total y Cobrar: fijos abajo en el móvil mientras se recorre la comanda */}
+            <div className="sticky bottom-[calc(72px+env(safe-area-inset-bottom))] z-10 rounded-b-2xl border-t border-linea bg-panel/95 p-4 shadow-[0_-10px_24px_rgb(0_0_0/0.3)] backdrop-blur lg:static lg:bg-transparent lg:shadow-none lg:backdrop-blur-none">
+              <div className="mb-3 flex items-baseline justify-between">
+                <span className="text-sm uppercase tracking-widest text-suave">Total</span>
+                <span className="font-display text-3xl font-bold text-oro-claro">{euros(total)}</span>
+              </div>
+              {lineas.some((l) => l.merma) && (
+                <p className="mb-3 hidden text-xs text-suave lg:block">Las líneas en merma no se cobran ni cuentan en la facturación.</p>
+              )}
+
+              <Boton
+                variante="oro"
+                className="w-full py-4 text-base"
+                disabled={ocupado || total <= 0}
+                onClick={() => setCobrando(true)}
+              >
+                <Receipt size={18} /> Cobrar {total > 0 && euros(total)}
+              </Boton>
+              {!hayCaja && total > 0 && <p className="mt-2 text-center text-xs text-peligro">No hay caja abierta: no se puede cobrar todavía.</p>}
+            </div>
           </div>
         </section>
       </div>
+
+      {/* Barra fija en el móvil mientras se mira la carta: lo último añadido y acceso a la comanda */}
+      {vista === 'carta' && principales.length > 0 && (
+        <button
+          onClick={() => {
+            setVista('comanda')
+            window.scrollTo({ top: 0 })
+          }}
+          className="fixed inset-x-3 bottom-[calc(76px+env(safe-area-inset-bottom))] z-20 flex items-center gap-3 rounded-2xl border border-oro/50 bg-panel-2/95 px-4 py-3 text-left shadow-2xl backdrop-blur lg:hidden"
+        >
+          <span className="flex h-9 min-w-9 items-center justify-center rounded-full bg-oro px-2 font-bold text-fondo">{unidades}</span>
+          <span className="min-w-0 flex-1 truncate text-sm">
+            {anadido ? (
+              <span className="font-semibold text-ok">✓ Añadido: {anadido}</span>
+            ) : (
+              <span className="text-suave">Ver la comanda</span>
+            )}
+          </span>
+          <span className="font-display text-lg font-bold text-oro-claro">{euros(total)}</span>
+        </button>
+      )}
 
       {/* Modales */}
       {carta && (
@@ -323,7 +364,10 @@ export function ComandaView({
               p_sabores: sabores.map((s) => ({ sabor_id: s.saborId, porcentaje: s.porcentaje })),
               p_notas: notas,
             })
-            if (!error) setShisha(null)
+            if (!error) {
+              setAnadido(shisha!.nombre)
+              setShisha(null)
+            }
             return error
           }}
         />
@@ -334,7 +378,10 @@ export function ComandaView({
         onCerrar={() => setNota(null)}
         onConfirmar={async (texto) => {
           const { error } = await accion('anadir_linea', { p_comanda: comanda.id, p_articulo: nota!.id, p_cantidad: 1, p_notas: texto })
-          if (!error) setNota(null)
+          if (!error) {
+            setAnadido(nota!.nombre)
+            setNota(null)
+          }
           return error
         }}
       />

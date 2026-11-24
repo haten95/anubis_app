@@ -100,7 +100,7 @@ export function CartaView({ perfil }: { perfil: Usuario }) {
         <Aviso>{error}</Aviso>
       </div>
 
-      <div className="grid gap-5 md:grid-cols-[220px_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 md:grid-cols-[220px_minmax(0,1fr)]">
         {/* Categorías */}
         <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-col md:overflow-visible md:px-0">
           {visibles.map((c, i) => (

@@ -113,14 +113,14 @@ export function InformesView() {
           </button>
         ))}
         {preset === 'propio' && (
-          <>
+          <div className="grid w-full grid-cols-2 gap-2 sm:w-auto">
             <Campo etiqueta="Desde">
-              <Entrada type="date" value={propio[0]} onChange={(e) => e.target.value && setPropio([e.target.value, propio[1]])} className="w-40" />
+              <Entrada type="date" value={propio[0]} onChange={(e) => e.target.value && setPropio([e.target.value, propio[1]])} className="sm:w-40" />
             </Campo>
             <Campo etiqueta="Hasta">
-              <Entrada type="date" value={propio[1]} onChange={(e) => e.target.value && setPropio([propio[0], e.target.value])} className="w-40" />
+              <Entrada type="date" value={propio[1]} onChange={(e) => e.target.value && setPropio([propio[0], e.target.value])} className="sm:w-40" />
             </Campo>
-          </>
+          </div>
         )}
       </div>
       <p className="-mt-3 mb-5 flex items-center gap-1.5 text-xs text-suave">
@@ -209,7 +209,7 @@ function Contenido({ informe, desde, hasta, cargando }: { informe: InformeVentas
           <GraficoColumnas
             datos={informe.por_dia.map((d) => ({ clave: d.dia, valor: n(d.ventas), detalle: `${d.tickets} tickets` }))}
             formato={eurosCortos}
-            etiqueta={(c) => (dias > 14 ? String(deIso(c).getDate()) : fechaLarga(c, true))}
+            etiqueta={(c) => (dias > 7 ? String(deIso(c).getDate()) : fechaLarga(c, true).split(' ').slice(0, 2).join(' '))}
             cadaEtiqueta={dias > 20 ? 3 : 1}
           />
           <TablaDatos filas={informe.por_dia.map((d) => [fechaLarga(d.dia, true), euros(n(d.ventas)), `${d.tickets}`])} cabecera={['Día', 'Ventas', 'Tickets']} />
@@ -222,7 +222,7 @@ function Contenido({ informe, desde, hasta, cargando }: { informe: InformeVentas
           datos={horas.map((h) => ({ clave: String(h.hora), valor: n(h.ventas), detalle: `${h.tickets} tickets` }))}
           formato={eurosCortos}
           etiqueta={(c) => `${c.padStart(2, '0')}h`}
-          cadaEtiqueta={2}
+          cadaEtiqueta={3}
           alto={170}
         />
         <TablaDatos

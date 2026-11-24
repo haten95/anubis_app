@@ -15,12 +15,14 @@ export function MesaIcono({
   capacidad,
   inactiva,
   tamano = 92,
+  className,
 }: {
   numero: number
   estado?: EstadoMesa
   capacidad?: number | null
   inactiva?: boolean
   tamano?: number
+  className?: string
 }) {
   const c = COLORES[estado]
   const sillas = Math.min(Math.max(capacidad ?? 4, 2), 8)
@@ -29,7 +31,7 @@ export function MesaIcono({
       width={tamano}
       height={tamano}
       viewBox="0 0 100 100"
-      className={clsx('transition', inactiva && 'opacity-35 grayscale')}
+      className={clsx('transition', inactiva && 'opacity-35 grayscale', className)}
       role="img"
       aria-label={`Mesa ${numero}`}
     >

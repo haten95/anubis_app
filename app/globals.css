@@ -75,12 +75,14 @@ textarea {
   border-image: linear-gradient(90deg, transparent, var(--color-oro), transparent) 1;
 }
 
+/* Solo fundido: un transform en la pantalla descolocaría las barras fijas que contiene */
 @keyframes aparecer {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 .aparecer {
-  animation: aparecer 0.25s ease-out both;
+  /* "backwards": al terminar no deja nada aplicado (si no, las ventanas quedarían detrás de la cabecera) */
+  animation: aparecer 0.25s ease-out backwards;
 }
 
 /* Impresión de tickets: solo se imprime el ticket */

@@ -41,7 +41,7 @@ export function GraficoColumnas({
     <div className="relative select-none">
       <div className="flex gap-2">
         {/* Eje Y */}
-        <div className="flex flex-col justify-between text-right text-[11px] text-suave" style={{ height: alto }}>
+        <div className="flex flex-col justify-between whitespace-nowrap text-right text-[11px] text-suave" style={{ height: alto }}>
           {lineas.map((l) => (
             <span key={l} className="-translate-y-1/2 first:translate-y-0 last:translate-y-0">
               {formato(max * l)}
@@ -79,7 +79,7 @@ export function GraficoColumnas({
           {/* Eje X */}
           <div className="mt-1.5 flex gap-[2px] text-[10px] text-suave">
             {datos.map((d, i) => (
-              <span key={d.clave} className="flex-1 truncate text-center">
+              <span key={d.clave} className="flex min-w-0 flex-1 justify-center overflow-visible whitespace-nowrap">
                 {i % cadaEtiqueta === 0 ? etiqueta(d.clave) : ''}
               </span>
             ))}
